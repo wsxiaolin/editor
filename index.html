@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="./editor/editor.css" />
+  <script type="text/javascript" src="./editor/editor.js"></script>
+  <script type="text/javascript" src="./editor/marked.js"></script>
+  
+  <title></title>
+</head>
+
+<body>
+<style type="text/css">
+      body {
+        padding: 0;
+        margin: 0;
+        background-color: #f9f9f7;
+      }
+    </style>
+</head>
+<body>
+  
+<div class="editor-wrapper">
+<input id="title" type="text" placeholder="标题" class="title"/>
+<textarea id="editor" placeholder="正文"></textarea>
+</div>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+
+      function _readFromLocalStorage() {
+        const title = localStorage.getItem('title');
+        const article = localStorage.getItem('article');
+        if (title && article) {
+          return { title, article };
+        } else {
+          return null;
+        }
+      }
+
+      const storedData = _readFromLocalStorage();
+
+      if (storedData) {
+        var editor = new Editor();
+        document.getElementById("title").value = storedData.title;
+        document.getElementById('editor').innerHTML = storedData.article;
+        editor.render();
+        
+      } else {
+        var xhr = new XMLHttpRequest();
+        xhr.open('GET', 'markdown.md', true);
+        xhr.onreadystatechange = function() {
+          if (xhr.readyState === 4) {
+            if (xhr.status === 200) {
+              document.getElementById('editor').innerHTML = xhr.responseText;
+            } else {
+              document.getElementById('editor').innerHTML = "在此输入正文";
+            }
+            var editorInstance = new Editor();
+            editorInstance.render();
+          }
+        };
+        xhr.send();
+      }
+    });
+  </script>
+
+</body>
+
+</html>
